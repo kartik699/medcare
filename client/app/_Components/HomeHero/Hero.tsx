@@ -7,7 +7,7 @@ export default function Hero() {
             <div className={styles.textContainer}>
                 <h1>Health in Your Hands.</h1>
                 <p>
-                    Take control of your healthcare with CareMate. Book
+                    Take control of your healthcare with Medcare. Book
                     appointments with ease, explore health blogs, and stay on
                     top of your well-being, all in one place.
                 </p>

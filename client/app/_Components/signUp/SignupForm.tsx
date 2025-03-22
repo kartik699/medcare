@@ -1,11 +1,13 @@
+import Link from "next/link";
 import styles from "./signup.module.css";
 import Image from "next/image";
+
 export default function SignUpForm() {
     return (
         <div className={styles.signupContainer}>
             <h2>Sign Up</h2>
             <p>
-                Already a member? <a href="/login">Login.</a>
+                Already a member? <Link href="/login">Login.</Link>
             </p>
 
             {/* <label>Role</label>
@@ -29,7 +31,11 @@ export default function SignUpForm() {
                             width={20}
                         ></Image>
                     </span>
-                    <input type="input" placeholder="Enter your name" />
+                    <input
+                        type="input"
+                        placeholder="Enter your name"
+                        required
+                    />
                 </section>
             </div>
 
@@ -56,7 +62,8 @@ export default function SignUpForm() {
                     </span>
                     <input
                         type="email"
-                        placeholder="Enter your email address"
+                        placeholder="Enter your email"
+                        required
                     />
                 </section>
             </div>
@@ -72,7 +79,7 @@ export default function SignUpForm() {
                             width={20}
                         ></Image>
                     </span>
-                    <input type="password" placeholder="********" />
+                    <input type="password" placeholder="********" required />
                 </section>
             </div>
 
