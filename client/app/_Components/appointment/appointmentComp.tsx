@@ -108,7 +108,7 @@ export default function Appointment() {
                     <select className={style.hospitalList}>
                         <option>{HospitalList[0]}</option>
                     </select>
-                    <Calendar/>
+                    <Calendar />
                     <div className={style.availableSlots}>
                         <div className={style.sunCountOfSlots}>
                             <div className={style.sunMorning}>
@@ -125,7 +125,11 @@ export default function Appointment() {
                                 return (
                                     <button
                                         onClick={() => handleSlotSelection(i)}
-                                        className={`{(i==slotSelectedE)?style.bgGreen:style.bgWhite} ${
+                                        className={`${
+                                            i == slotSelected
+                                                ? style.bgGreen
+                                                : style.bgWhite
+                                        } ${
                                             data.isAvailable
                                                 ? ""
                                                 : style.disabled
@@ -154,7 +158,11 @@ export default function Appointment() {
                                 return (
                                     <button
                                         onClick={() => handleSlotSelectionE(i)}
-                                        className={`{(i==slotSelectedE)?style.bgGreen:style.bgWhite} ${
+                                        className={`${
+                                            i == slotSelectedE
+                                                ? style.bgGreen
+                                                : style.bgWhite
+                                        } ${
                                             data.isAvailable
                                                 ? ""
                                                 : style.disabled

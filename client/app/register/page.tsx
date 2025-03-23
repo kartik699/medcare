@@ -1,7 +1,9 @@
-import SignUpComp from "../_Components/signUp/SignUp";
+import SignUpComp from "../_components/signUp/SignUp";
 
-export default function Register(){
-  return <>
-  <SignUpComp/>
-  </>
+export default function Register() {
+    return (
+        <>
+            <SignUpComp />
+        </>
+    );
 }
