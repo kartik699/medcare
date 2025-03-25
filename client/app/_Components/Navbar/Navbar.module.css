@@ -180,16 +180,12 @@
 
 .logoutBtn {
     padding: 0.5rem 1rem;
-    background-color: #c0a080;
+    background-color: #145214;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s;
-}
-
-.logoutBtn:hover {
-    background-color: #a88c6c;
 }
 
 .mobileUserName {

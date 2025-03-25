@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-// const passport_google = require("./config/passport-google-oauth.js");
+const passport_google = require("./config/passport-google-oauth.js");
 const passport_local = require("./config/passport-local-strategy.js");
 const cors = require("cors");
 
