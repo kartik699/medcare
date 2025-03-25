@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./Navbar.module.css";
 import Image from "next/image";
 import { useLogin } from "@/providers/loginProvider";
+import { FaAmbulance } from "react-icons/fa";
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -36,10 +37,25 @@ export default function Navbar() {
                         <Link href="/appointments">Appointments</Link>
                     </li>
                     <li>
-                        <Link href="/">Health Blog</Link>
+                        <Link href="/healthblog">Health Blog</Link>
                     </li>
                     <li>
                         <Link href="/">Reviews</Link>
+                    </li>
+                    <li>
+                        <Link
+                            style={{
+                                color: "red",
+                                display: "flex",
+                                gap: "5px",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                            href="/help"
+                        >
+                            <FaAmbulance />
+                            Help
+                        </Link>
                     </li>
                 </ul>
             </div>
@@ -106,13 +122,32 @@ export default function Navbar() {
                             </Link>
                         </li>
                         <li>
-                            <Link href="/" onClick={() => setMenuOpen(false)}>
+                            <Link
+                                href="/healthblog"
+                                onClick={() => setMenuOpen(false)}
+                            >
                                 Health Blog
                             </Link>
                         </li>
                         <li>
                             <Link href="/" onClick={() => setMenuOpen(false)}>
                                 Reviews
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                style={{
+                                    color: "red",
+                                    display: "flex",
+                                    gap: "5px",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                                href="/help"
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                <FaAmbulance />
+                                Help
                             </Link>
                         </li>
                     </ul>

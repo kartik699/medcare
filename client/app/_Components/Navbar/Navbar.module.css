@@ -212,6 +212,11 @@
     background-color: #a88c6c;
 }
 
+.helpLink {
+    color: red;
+    font: 100;
+}
+
 @media screen and (max-width: 1024px) {
     .navLinks,
     .buttons,

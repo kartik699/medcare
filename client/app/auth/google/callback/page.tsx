@@ -38,7 +38,7 @@ export default function GoogleCallback() {
         };
 
         handleCallback();
-    }, [router, setUser]); // Remove fetchUser from dependencies
+    }, [router, setUser]);
 
     return (
         <div
