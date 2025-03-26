@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
             {
                 hostname: "www.shutterstock.com",
             },
+            {
+                hostname: "res.cloudinary.com",
+            },
         ],
     },
     async rewrites() {

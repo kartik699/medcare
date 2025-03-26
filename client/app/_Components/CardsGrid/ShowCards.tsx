@@ -1,120 +1,27 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import CardComp from "../Card/Card";
 import Search from "../SearchBar/Search";
 import styles from "./CardsGrid.module.css";
 
-const doctors = [
-    {
-        id: 1,
-        name: "Dr. Jane Doe",
-        degree: "MBBS",
-        specialty: "Dentist",
-        experience: "9 Years",
-        rating: 4,
-        image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
-    },
-    {
-        id: 2,
-        name: "Dr. Sam Wilson",
-        degree: "BDS",
-        specialty: "Dentist",
-        experience: "5 Years",
-        rating: 5,
-        image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
-    },
-    {
-        id: 3,
-        name: "Dr. Pepper Potts",
-        degree: "BHMS",
-        specialty: "Dentist",
-        experience: "5 Years",
-        rating: 4,
-        image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
-    },
-    {
-        id: 4,
-        name: "Dr. Bruce Banner",
-        degree: "MD",
-        specialty: "Neurologist",
-        experience: "15 Years",
-        rating: 5,
-        image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
-    },
-    {
-        id: 5,
-        name: "Dr. Tony Stark",
-        degree: "MBBS",
-        specialty: "Cardiologist",
-        experience: "20 Years",
-        rating: 5,
-        image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
-    },
-    {
-        id: 6,
-        name: "Dr. Natasha Romanoff",
-        degree: "MD",
-        specialty: "Pediatrician",
-        experience: "10 Years",
-        rating: 4,
-        image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
-    },
-    {
-        id: 7,
-        name: "Dr. Steve Rogers",
-        degree: "MBBS",
-        specialty: "Orthopedic Surgeon",
-        experience: "12 Years",
-        rating: 5,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 8,
-        name: "Dr. Wanda Maximoff",
-        degree: "MD",
-        specialty: "Psychiatrist",
-        experience: "8 Years",
-        rating: 4,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 9,
-        name: "Dr. Stephen Strange",
-        degree: "MBBS",
-        specialty: "Neurosurgeon",
-        experience: "18 Years",
-        rating: 5,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 10,
-        name: "Dr. Carol Danvers",
-        degree: "BAMS",
-        specialty: "General Physician",
-        experience: "7 Years",
-        rating: 4,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 11,
-        name: "Dr. Scott Lang",
-        degree: "BHMS",
-        specialty: "Dermatologist",
-        experience: "6 Years",
-        rating: 4,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 12,
-        name: "Dr. Peter Parker",
-        degree: "MBBS",
-        specialty: "ENT Specialist",
-        experience: "5 Years",
-        rating: 5,
-        image: "https://via.placeholder.com/150",
-    },
-];
+interface Doctor {
+    id: number;
+    name: string;
+    specialty: string;
+    experience: string;
+    rating: number;
+    profile_pic: string;
+}
+
+interface DoctorsResponse {
+    ok: boolean;
+    data: {
+        rows: Doctor[];
+        total: number;
+    };
+    message?: string;
+}
 
 export default function ShowCards() {
     const [filters, setFilters] = useState({
@@ -123,12 +30,74 @@ export default function ShowCards() {
         gender: "any",
     });
 
+    const [doctors, setDoctors] = useState<Doctor[]>([]);
+    const [totalDoctors, setTotalDoctors] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+    useEffect(() => {
+        fetchDoctors();
+    }, [currentPage]);
+
+    const fetchDoctors = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Ensure currentPage is a valid number
+            const pageNum = Math.max(1, currentPage);
+
+            const response = await fetch("http://localhost:3001/api/doctors", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ pageNum }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(
+                    errorData.message ||
+                        `HTTP error! status: ${response.status}`
+                );
+            }
+
+            const data: DoctorsResponse = await response.json();
+
+            if (!data.ok) {
+                throw new Error(data.message || "Failed to fetch doctors");
+            }
+
+            if (!data.data?.rows) {
+                throw new Error("Invalid data format received from server");
+            }
+
+            setDoctors(data.data.rows);
+            setTotalDoctors(data.data.total || 0);
+        } catch (err) {
+            console.error("Error fetching doctors:", err);
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "An error occurred while fetching doctors"
+            );
+            setDoctors([]);
+            setTotalDoctors(0);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const resetFilters = () => {
         setFilters({
             rating: "any",
             experience: "15+",
             gender: "any",
         });
+        setCurrentPage(1);
     };
 
     const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -137,15 +106,40 @@ export default function ShowCards() {
             ...prevFilters,
             [name]: value,
         }));
+        setCurrentPage(1);
     };
+
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+
+    if (loading) {
+        return (
+            <div className={styles.loadingContainer}>
+                <p>Loading doctors...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.errorContainer}>
+                <p>Error: {error}</p>
+                <button onClick={fetchDoctors} className={styles.retryButton}>
+                    Retry
+                </button>
+            </div>
+        );
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalDoctors / itemsPerPage));
 
     return (
         <div className={styles.pageContainer}>
             <Search />
             <div className={styles.infoText}>
                 <p className={styles.docCount}>
-                    {" "}
-                    {doctors.length} doctors available
+                    {totalDoctors} doctors available
                 </p>
                 <p className={styles.subText}>
                     Book appointments with minimum wait-time & verified doctor
@@ -341,9 +335,61 @@ export default function ShowCards() {
                 </div>
 
                 <div className={styles.gridContainer}>
-                    {doctors.map((doctor) => (
-                        <CardComp key={doctor.id} doctor={doctor} />
-                    ))}
+                    {/* Cards Grid */}
+                    <div className={styles.cardsGrid}>
+                        {doctors.map((doctor) => (
+                            <CardComp
+                                key={doctor.id}
+                                doctor={{
+                                    ...doctor,
+                                    image: doctor.profile_pic,
+                                    degree: doctor.specialty,
+                                }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className={styles.pagination}>
+                            <button
+                                onClick={() =>
+                                    handlePageChange(currentPage - 1)
+                                }
+                                disabled={currentPage === 1}
+                                className={styles.paginationButton}
+                            >
+                                Previous
+                            </button>
+
+                            {Array.from(
+                                { length: totalPages },
+                                (_, i) => i + 1
+                            ).map((pageNum) => (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => handlePageChange(pageNum)}
+                                    className={`${styles.paginationButton} ${
+                                        currentPage === pageNum
+                                            ? styles.activePage
+                                            : ""
+                                    }`}
+                                >
+                                    {pageNum}
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() =>
+                                    handlePageChange(currentPage + 1)
+                                }
+                                disabled={currentPage === totalPages}
+                                className={styles.paginationButton}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

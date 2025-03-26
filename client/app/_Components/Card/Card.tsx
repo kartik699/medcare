@@ -32,18 +32,11 @@ export default function CardComp(val: any) {
                     height={20}
                     alt="Hourglass"
                 />
-                <p className={styles.experience}>{e.experience}</p>
+                <p className={styles.experience}>{e.experience} years</p>
             </div>
             <div className={styles.ratingContainer}>
-                {Array.from({ length: 5 }, (_, index) => (
-                    <Image
-                        key={index}
-                        src={index < e.rating ? "/star.svg" : "/blankStar.svg"}
-                        alt="star"
-                        width={20}
-                        height={20}
-                    />
-                ))}
+                Rating: {e.rating}{" "}
+                <Image alt="star" width={20} height={20} src={"/star.svg"} />
             </div>
             <Link href={"/bookingpage"} className={styles.bookButton}>
                 Book Appointment
