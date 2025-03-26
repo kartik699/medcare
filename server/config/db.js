@@ -1,11 +1,12 @@
 const pgp = require("pg-promise")();
+require("dotenv").config();
 
 const config = {
     host: "localhost",
     port: 5432,
     database: "medcare_db",
     user: "postgres",
-    password: "Kartik7294",
+    password: process.env.POSTGRESQL_PASSWORD,
 };
 
 const db = pgp(config);
