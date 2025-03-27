@@ -46,13 +46,22 @@ export default function ShowCards() {
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [isResetting, setIsResetting] = useState(false);
+    const [filtersApplied, setFiltersApplied] = useState(false);
+    const [searchApplied, setSearchApplied] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 6;
 
     useEffect(() => {
         if (!isResetting) {
-            fetchDoctors();
+            if (searchApplied) {
+                handleSearch(searchQuery);
+            } else if (filtersApplied) {
+                handleFilters();
+            } else {
+                fetchDoctors();
+            }
         }
-    }, [currentPage, isResetting]);
+    }, [currentPage, isResetting, filtersApplied, searchApplied, searchQuery]);
 
     const handleFilters = async () => {
         try {
@@ -80,8 +89,16 @@ export default function ShowCards() {
 
             // Only make the API call if there are query parameters
             if (queryParams.toString()) {
+                setFiltersApplied(true);
                 const response = await fetch(
-                    `http://localhost:3001/api/doctors/filter?${queryParams.toString()}`
+                    `http://localhost:3001/api/doctors/filter?${queryParams.toString()}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ pageNum: currentPage }),
+                    }
                 );
 
                 if (!response.ok) {
@@ -111,7 +128,7 @@ export default function ShowCards() {
                 await fetchDoctors();
             }
 
-            setCurrentPage(1); // Reset to first page when filters are applied
+            // Don't reset to first page when filters are already applied and user is navigating pages
         } catch (err) {
             console.error("Error fetching filtered doctors:", err);
             setError(
@@ -177,6 +194,8 @@ export default function ShowCards() {
     };
 
     const resetFilters = async () => {
+        if (!filtersApplied) return;
+
         setIsResetting(true);
         setFilters({
             rating: "any",
@@ -184,6 +203,9 @@ export default function ShowCards() {
             gender: "any",
         });
         setCurrentPage(1);
+        setFiltersApplied(false);
+        setSearchApplied(false);
+        setSearchQuery("");
 
         // Fetch all doctors after resetting filters
         try {
@@ -216,6 +238,61 @@ export default function ShowCards() {
         setCurrentPage(pageNumber);
     };
 
+    const handleSearch = async (searchVal: string) => {
+        if (!searchVal) return;
+
+        try {
+            setLoading(true);
+            setError(null);
+            setSearchQuery(searchVal);
+
+            const queryParams = new URLSearchParams();
+            queryParams.append("q", searchVal);
+            queryParams.append("page", currentPage.toString());
+
+            // Clear any active filters when searching
+            setFiltersApplied(false);
+            setSearchApplied(true);
+
+            const response = await fetch(
+                `http://localhost:3001/api/doctors/search?${queryParams.toString()}`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(
+                    errorData.message ||
+                        `HTTP error! status: ${response.status}`
+                );
+            }
+
+            const data: DoctorsResponse = await response.json();
+
+            if (!data.ok) {
+                throw new Error(data.message || "Failed to search doctors");
+            }
+
+            if (!data.data?.rows) {
+                throw new Error("Invalid data format received from server");
+            }
+
+            setDoctors(data.data.rows);
+            setTotalDoctors(data.data.total || 0);
+            setCurrentPage(1); // Reset to first page for new search results
+        } catch (err) {
+            console.error("Error searching doctors:", err);
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "An error occurred while searching doctors"
+            );
+            setDoctors([]);
+            setTotalDoctors(0);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -239,7 +316,7 @@ export default function ShowCards() {
 
     return (
         <div className={styles.pageContainer}>
-            <Search />
+            <Search handleSearch={handleSearch} />
             <div className={styles.infoText}>
                 <p className={styles.docCount}>
                     {totalDoctors} doctors available
@@ -444,7 +521,15 @@ export default function ShowCards() {
                             </label>
                         </div>
                     </div>
-                    <button onClick={handleFilters} className={styles.applyBtn}>
+                    <button
+                        onClick={() => {
+                            if (!filtersApplied) {
+                                setCurrentPage(1);
+                            }
+                            handleFilters();
+                        }}
+                        className={styles.applyBtn}
+                    >
                         Apply Filters
                     </button>
                 </div>
