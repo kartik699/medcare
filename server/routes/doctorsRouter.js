@@ -131,7 +131,6 @@ router.get("/search", async (req, res) => {
     const offset = (pageNum - 1) * 6;
 
     try {
-        // Fix the LIKE query to use proper parameter binding
         const searchPattern = `%${q}%`;
 
         const query = `
