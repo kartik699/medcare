@@ -1,0 +1,226 @@
+.page {
+    --gray-rgb: 0, 0, 0;
+    --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
+    --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
+
+    --button-primary-hover: #15381f;
+    --button-secondary-hover: #f2f2f2;
+    --primary-color: #1c4a2a;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100svh;
+    padding: 40px;
+    font-family: var(--font-geist-sans);
+    background-color: #f9f9f9;
+}
+
+@media (prefers-color-scheme: dark) {
+    .page {
+        --gray-rgb: 255, 255, 255;
+        --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
+        --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
+
+        --button-primary-hover: #2a6e3f;
+        --button-secondary-hover: #1a1a1a;
+        --primary-color: #1c4a2a;
+    }
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: center;
+    width: 100%;
+    max-width: 480px;
+}
+
+.main ol {
+    font-family: var(--font-geist-mono);
+    padding-left: 0;
+    margin: 0;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+    list-style-position: inside;
+}
+
+.main li:not(:last-of-type) {
+    margin-bottom: 8px;
+}
+
+.main code {
+    font-family: inherit;
+    background: var(--gray-alpha-100);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.ctas {
+    display: flex;
+    gap: 16px;
+}
+
+.ctas a {
+    appearance: none;
+    border-radius: 128px;
+    height: 48px;
+    padding: 0 20px;
+    border: none;
+    border: 1px solid transparent;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 500;
+}
+
+a.primary {
+    background: var(--foreground);
+    color: var(--background);
+    gap: 8px;
+}
+
+a.secondary {
+    border-color: var(--gray-alpha-200);
+    min-width: 158px;
+}
+
+/* Login page specific styles */
+.loginHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.loginHeader h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1c4a2a;
+}
+
+.loginContainer {
+    width: 100%;
+    background: var(--background);
+    border-radius: 12px;
+    border: 1px solid var(--gray-alpha-200);
+    padding: 28px;
+    box-shadow: 0 4px 16px rgba(var(--gray-rgb), 0.04);
+}
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.loginForm h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.inputGroup label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1c4a2a;
+}
+
+.inputGroup input {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 6px;
+    border: 2px solid #e0e0e0;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.inputGroup input:focus {
+    outline: none;
+    border-color: #1c4a2a;
+    box-shadow: 0 0 0 2px rgba(28, 74, 42, 0.1);
+}
+
+.inputGroup input:hover:not(:focus) {
+    border-color: #c0c0c0;
+}
+
+.forgotPassword {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -10px;
+}
+
+.forgotPassword a {
+    font-size: 14px;
+    color: #1c4a2a;
+}
+
+.loginForm button.primary {
+    appearance: none;
+    border-radius: 6px;
+    height: 44px;
+    padding: 0 20px;
+    border: none;
+    background: #1c4a2a;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.loginForm button.primary:hover {
+    background: #15381f;
+}
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    .loginForm button.primary:hover {
+        background: #15381f;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(28, 74, 42, 0.2);
+    }
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: 32px;
+        padding-bottom: 80px;
+    }
+
+    .loginContainer {
+        padding: 24px;
+    }
+
+    .loginForm h2 {
+        font-size: 20px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .logo {
+        filter: invert();
+    }
+}

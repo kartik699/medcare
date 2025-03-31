@@ -197,7 +197,7 @@ export default function ShowCards() {
     };
 
     const resetFilters = async () => {
-        if (!searchQuery) return;
+        if (!filtersApplied && !searchQuery) return;
 
         setIsResetting(true);
         setFilters({
