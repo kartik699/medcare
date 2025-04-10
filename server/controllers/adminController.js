@@ -48,6 +48,7 @@ const getAppointments = async (req, res) => {
             LEFT JOIN doctors d ON a.doctor_id = d.id
             LEFT JOIN users u ON a.user_id = u.user_id
             LEFT JOIN slots s ON a.slot_id = s.id
+            WHERE a.status <> 'confirmed' AND a.status <> 'rejected'
             ORDER BY a.appointment_date, s.slot_time;
         `;
         const result = await db.any(query);

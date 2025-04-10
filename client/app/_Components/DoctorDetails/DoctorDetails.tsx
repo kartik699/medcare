@@ -47,7 +47,7 @@ const DoctorDetails = ({
                                 height={24}
                                 alt="Rating"
                             />
-                            <span>Rating: {rating}/5</span>
+                            <span>Rating: {rating ? rating : "-"}/5</span>
                         </div>
                     </div>
 
