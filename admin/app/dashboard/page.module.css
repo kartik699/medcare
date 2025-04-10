@@ -47,12 +47,23 @@
     background-color: #15381f;
 }
 
+.errorMessage {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
 .appointmentsSection {
     background: #fff;
     border-radius: 12px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     padding: 24px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    margin-bottom: 32px;
 }
 
 .appointmentsSection h2 {
@@ -99,12 +110,16 @@
     color: #c28200;
 }
 
-.approved {
+/* Map both 'approved' and 'confirmed' to the same style */
+.approved,
+.confirmed {
     background-color: rgba(41, 204, 106, 0.2);
     color: #0d7a39;
 }
 
-.declined {
+/* Map both 'declined' and 'rejected' to the same style */
+.declined,
+.rejected {
     background-color: rgba(244, 67, 54, 0.2);
     color: #c62828;
 }
@@ -163,6 +178,15 @@
     color: #757575;
 }
 
+.loadingSpinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+    font-size: 16px;
+    color: #757575;
+}
+
 .primary {
     background-color: #1c4a2a;
     color: white;
@@ -173,6 +197,83 @@
     font-weight: 500;
 }
 
+/* Doctor Section Styles */
+.doctorSection {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.doctorSection h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1c4a2a;
+}
+
+.doctorsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.doctorCard {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.doctorCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.doctorCard h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #1c4a2a;
+}
+
+.specialization {
+    font-size: 14px;
+    color: #555;
+    margin: 0 0 8px 0;
+    font-weight: 500;
+}
+
+.experience {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 4px 0;
+}
+
+.rating {
+    font-size: 13px;
+    color: #e67700;
+    margin: 0;
+    font-weight: 500;
+}
+
+.email {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+    word-break: break-all;
+}
+
+.noDoctors {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 16px;
+    color: #757575;
+}
+
 @media (max-width: 768px) {
     .dashboardContainer {
         padding: 16px;
@@ -181,5 +282,9 @@
     .appointmentsTable th:nth-child(3),
     .appointmentsTable td:nth-child(3) {
         display: none;
+    }
+
+    .doctorsList {
+        grid-template-columns: 1fr;
     }
 }

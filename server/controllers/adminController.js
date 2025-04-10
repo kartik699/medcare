@@ -1,3 +1,5 @@
+const db = require("../config/db.js");
+
 const getAllDoctors = async (req, res) => {
     try {
         // Get total count
@@ -26,6 +28,162 @@ const getAllDoctors = async (req, res) => {
     }
 };
 
+const getAppointments = async (req, res) => {
+    try {
+        // Get appointments with doctor and user information based on actual schema
+        const query = `
+            SELECT a.id, a.user_id, a.doctor_id, a.slot_id, a.appointment_type, 
+                   a.status, a.appointment_date,
+                   d.name as doctor_name, 
+                   d.specialty as doctor_specialty,
+                   u.user_name
+            FROM appointments a
+            LEFT JOIN doctors d ON a.doctor_id = d.id
+            LEFT JOIN users u ON a.user_id = u.user_id
+            ORDER BY a.appointment_date;
+        `;
+        const result = await db.any(query);
+
+        // Format the data to match frontend expectations
+        const appointments = result.map((app) => ({
+            id: app.id,
+            patientName: app.user_name || "Unknown Patient",
+            date: app.appointment_date,
+            // Extract time from date or use a default value
+            time: app.appointment_date
+                ? new Date(app.appointment_date).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                  })
+                : "N/A",
+            doctorId: app.doctor_id,
+            doctorName: app.doctor_name || "Unknown Doctor",
+            status: app.status || "pending",
+        }));
+
+        return res.status(200).json({
+            ok: true,
+            data: appointments,
+        });
+    } catch (error) {
+        console.error("Database error:", error.message);
+        return res.status(500).json({
+            ok: false,
+            message: "An error occurred while fetching appointments",
+        });
+    }
+};
+
+const updateAppointmentStatus = async (req, res) => {
+    try {
+        const { appointmentId, status } = req.body;
+
+        if (!appointmentId || !status) {
+            return res.status(400).json({
+                ok: false,
+                message: "Appointment ID and status are required",
+            });
+        }
+
+        // Update appointment status
+        const query = `
+            UPDATE appointments 
+            SET status = $1 
+            WHERE id = $2 
+            RETURNING *;
+        `;
+
+        const result = await db.oneOrNone(query, [status, appointmentId]);
+
+        if (!result) {
+            return res.status(404).json({
+                ok: false,
+                message: "Appointment not found",
+            });
+        }
+
+        return res.status(200).json({
+            ok: true,
+            data: result,
+        });
+    } catch (error) {
+        console.error("Database error:", error.message);
+        return res.status(500).json({
+            ok: false,
+            message: "An error occurred while updating appointment status",
+        });
+    }
+};
+
+const createDoctor = async (req, res) => {
+    try {
+        const {
+            firstName,
+            lastName,
+            email,
+            phone,
+            specialization,
+            experience,
+            address,
+            bio,
+            password,
+            avatarUrl,
+        } = req.body;
+
+        // Validate required fields
+        if (!firstName || !lastName || !specialization) {
+            return res.status(400).json({
+                ok: false,
+                message: "Required fields are missing",
+            });
+        }
+
+        // Create full name from first and last name
+        const fullName = `${firstName} ${lastName}`;
+
+        // Insert the new doctor based on actual schema
+        const query = `
+            INSERT INTO doctors (
+                name, 
+                specialty, 
+                experience,
+                rating,
+                location,
+                profile_pic,
+                gender
+            ) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id, name, specialty;
+        `;
+
+        const result = await db.one(query, [
+            fullName,
+            specialization,
+            experience ? parseInt(experience) : 0,
+            0, // Default rating
+            address || null,
+            avatarUrl || null,
+            "male", // Default gender, adjust as needed
+        ]);
+
+        return res.status(201).json({
+            ok: true,
+            data: result,
+            message: "Doctor created successfully",
+        });
+    } catch (error) {
+        console.error("Database error:", error.message);
+        return res.status(500).json({
+            ok: false,
+            message: "An error occurred while creating the doctor",
+        });
+    }
+};
+
 module.exports = {
     getAllDoctors,
+    getAppointments,
+    updateAppointmentStatus,
+    createDoctor,
 };

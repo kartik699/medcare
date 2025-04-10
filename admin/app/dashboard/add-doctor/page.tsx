@@ -10,15 +10,11 @@ export default function AddDoctorPage() {
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
-        email: "",
-        phone: "",
-        specialization: "",
+        specialty: "",
         experience: "",
-        address: "",
-        bio: "",
-        password: "",
-        confirmPassword: "",
-        avatarUrl: "",
+        location: "",
+        profilePic: "",
+        gender: "male",
     });
 
     const [error, setError] = useState("");
@@ -40,25 +36,8 @@ export default function AddDoctorPage() {
         e.preventDefault();
         setError("");
 
-        // Basic validation
-        if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match");
-            return;
-        }
-
-        if (formData.password.length < 6) {
-            setError("Password must be at least 6 characters long");
-            return;
-        }
-
         // Required fields check
-        const requiredFields = [
-            "firstName",
-            "lastName",
-            "email",
-            "phone",
-            "specialization",
-        ];
+        const requiredFields = ["firstName", "lastName", "specialty"];
         const missingFields = requiredFields.filter(
             (field) => !formData[field as keyof typeof formData]
         );
@@ -75,17 +54,40 @@ export default function AddDoctorPage() {
         try {
             setLoading(true);
 
-            // This would be replaced with an actual API call
-            console.log("Creating doctor:", formData);
+            const response = await fetch(
+                "http://localhost:3001/api/admin/doctor",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        specialization: formData.specialty,
+                        experience: formData.experience,
+                        address: formData.location,
+                        avatarUrl: formData.profilePic,
+                        gender: formData.gender,
+                    }),
+                }
+            );
 
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to create doctor");
+            }
 
             // Navigate back to dashboard after successful creation
             router.push("/dashboard");
         } catch (err) {
             console.error("Error creating doctor:", err);
-            setError("Failed to create doctor. Please try again.");
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Failed to create doctor. Please try again."
+            );
         } finally {
             setLoading(false);
         }
@@ -147,39 +149,11 @@ export default function AddDoctorPage() {
 
                 <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                        <label htmlFor="email">Email Address *</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="Enter email address"
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label htmlFor="phone">Phone Number *</label>
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="Enter phone number"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="specialization">Specialization *</label>
+                        <label htmlFor="specialty">Specialization *</label>
                         <select
-                            id="specialization"
-                            name="specialization"
-                            value={formData.specialization}
+                            id="specialty"
+                            name="specialty"
+                            value={formData.specialty}
                             onChange={handleChange}
                             required
                         >
@@ -207,69 +181,41 @@ export default function AddDoctorPage() {
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label htmlFor="address">Address</label>
+                    <label htmlFor="location">Location/Address</label>
                     <input
                         type="text"
-                        id="address"
-                        name="address"
-                        value={formData.address}
+                        id="location"
+                        name="location"
+                        value={formData.location}
                         onChange={handleChange}
                         placeholder="Enter clinic address"
                     />
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label htmlFor="bio">Bio</label>
-                    <textarea
-                        id="bio"
-                        name="bio"
-                        value={formData.bio}
-                        onChange={handleChange}
-                        placeholder="Enter doctor's bio and qualifications"
-                        rows={4}
-                    />
-                </div>
-
-                <div className={styles.formGroup}>
-                    <label htmlFor="avatarUrl">Profile Image URL</label>
+                    <label htmlFor="profilePic">Profile Image URL</label>
                     <input
                         type="text"
-                        id="avatarUrl"
-                        name="avatarUrl"
-                        value={formData.avatarUrl}
+                        id="profilePic"
+                        name="profilePic"
+                        value={formData.profilePic}
                         onChange={handleChange}
                         placeholder="Enter profile image URL"
                     />
                 </div>
 
-                <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="password">Password *</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Enter password"
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label htmlFor="confirmPassword">
-                            Confirm Password *
-                        </label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            placeholder="Confirm password"
-                            required
-                        />
-                    </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="gender">Gender</label>
+                    <select
+                        id="gender"
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                    >
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
 
                 <div className={styles.formActions}>

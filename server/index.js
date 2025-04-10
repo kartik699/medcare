@@ -9,7 +9,7 @@ const port = process.env.PORT || 3001;
 
 app.use(
     cors({
-        origin: "http://localhost:3000", // Allow requests from Next.js
+        origin: ["http://localhost:3000", "http://localhost:3002"], // Allow requests from Next.js and admin app
         credentials: true, // Allow cookies/sessions
         methods: "GET,POST,PUT,DELETE", // Allow specific HTTP methods
         allowedHeaders: "Content-Type,Authorization", // Allow specific headers
