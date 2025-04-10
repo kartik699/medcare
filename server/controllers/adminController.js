@@ -30,17 +30,25 @@ const getAllDoctors = async (req, res) => {
 
 const getAppointments = async (req, res) => {
     try {
-        // Get appointments with doctor and user information based on actual schema
+        // Get appointments with doctor, user, and slot information
         const query = `
-            SELECT a.id, a.user_id, a.doctor_id, a.slot_id, a.appointment_type, 
-                   a.status, a.appointment_date,
-                   d.name as doctor_name, 
-                   d.specialty as doctor_specialty,
-                   u.user_name
+            SELECT 
+                a.id, 
+                a.user_id, 
+                a.doctor_id, 
+                a.slot_id, 
+                a.appointment_type, 
+                a.status, 
+                a.appointment_date,
+                d.name as doctor_name, 
+                d.specialty as doctor_specialty,
+                u.user_name,
+                s.slot_time
             FROM appointments a
             LEFT JOIN doctors d ON a.doctor_id = d.id
             LEFT JOIN users u ON a.user_id = u.user_id
-            ORDER BY a.appointment_date;
+            LEFT JOIN slots s ON a.slot_id = s.id
+            ORDER BY a.appointment_date, s.slot_time;
         `;
         const result = await db.any(query);
 
@@ -49,14 +57,7 @@ const getAppointments = async (req, res) => {
             id: app.id,
             patientName: app.user_name || "Unknown Patient",
             date: app.appointment_date,
-            // Extract time from date or use a default value
-            time: app.appointment_date
-                ? new Date(app.appointment_date).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                  })
-                : "N/A",
+            slot_time: app.slot_time || "00:00:00",
             doctorId: app.doctor_id,
             doctorName: app.doctor_name || "Unknown Doctor",
             status: app.status || "pending",
@@ -121,13 +122,9 @@ const createDoctor = async (req, res) => {
         const {
             firstName,
             lastName,
-            email,
-            phone,
             specialization,
             experience,
             address,
-            bio,
-            password,
             avatarUrl,
         } = req.body;
 

@@ -20,7 +20,7 @@ interface Appointment {
     id: number;
     patientName: string;
     date: string;
-    time: string;
+    slot_time: string;
     doctorId: number;
     doctorName: string;
     status: string;
@@ -31,6 +31,32 @@ export default function Dashboard() {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    // Helper function to format date
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    };
+
+    // Helper function to format time
+    const formatTime = (timeString: string) => {
+        // Format time from the slot_time (e.g., "09:00:00")
+        const [hours, minutes] = timeString.split(":");
+        const time = new Date();
+        time.setHours(parseInt(hours, 10));
+        time.setMinutes(parseInt(minutes, 10));
+
+        return time.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+        });
+    };
 
     // Fetch doctors and appointments
     useEffect(() => {
@@ -98,17 +124,20 @@ export default function Dashboard() {
                 throw new Error("Failed to update appointment status");
             }
 
-            // Update the UI optimistically
-            setAppointments(
-                appointments.map((app) =>
-                    app.id === appointmentId
-                        ? { ...app, status: newStatus }
-                        : app
-                )
+            // Remove the appointment from the table
+            setAppointments((prevAppointments) =>
+                prevAppointments.filter((app) => app.id !== appointmentId)
             );
+
+            // Show success message
+            const action = newStatus === "confirmed" ? "approved" : "declined";
+            const successMessage = `Appointment successfully ${action}`;
+            setError(successMessage);
+            setTimeout(() => setError(""), 3000);
         } catch (err) {
             console.error("Error updating appointment status:", err);
             setError("Failed to update appointment status. Please try again.");
+            setTimeout(() => setError(""), 3000);
         }
     };
 
@@ -138,7 +167,17 @@ export default function Dashboard() {
                 </div>
             </header>
 
-            {error && <div className={styles.errorMessage}>{error}</div>}
+            {error && (
+                <div
+                    className={`${styles.message} ${
+                        error.includes("successfully")
+                            ? styles.successMessage
+                            : styles.errorMessage
+                    }`}
+                >
+                    {error}
+                </div>
+            )}
 
             <div className={styles.appointmentsSection}>
                 <h2>Upcoming Appointments</h2>
@@ -164,8 +203,10 @@ export default function Dashboard() {
                                 appointments.map((appointment) => (
                                     <tr key={appointment.id}>
                                         <td>{appointment.patientName}</td>
-                                        <td>{appointment.date}</td>
-                                        <td>{appointment.time}</td>
+                                        <td>{formatDate(appointment.date)}</td>
+                                        <td>
+                                            {formatTime(appointment.slot_time)}
+                                        </td>
                                         <td>{appointment.doctorName}</td>
                                         <td>
                                             <span
