@@ -21,6 +21,7 @@ const Calendar = ({ onDateSelect }: CalendarProps) => {
             setSelectedDate(today);
             onDateSelect(today.toISOString().split("T")[0]);
         }
+        
     }, []);
 
     const handlePrev = () => {
